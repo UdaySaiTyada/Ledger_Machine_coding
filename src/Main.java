@@ -1,12 +1,16 @@
 import model.Command;
-
-import java.util.Scanner;
+import service.FileReaderService;
+import service.LoanService;
+import java.util.List;
 
 public class Main
 {
     public static void main(String[] args)
     {
-        Scanner sc = new Scanner(System.in);
-        Command command = Command.valueOf(sc.next());
+        FileReaderService fileReaderService = new FileReaderService();
+        LoanService loanService = new LoanService();
+
+        List<Command> commands = fileReaderService.readTheInputFileAndGetTheCommands();
+        loanService.processCommands(commands);
     }
 }
