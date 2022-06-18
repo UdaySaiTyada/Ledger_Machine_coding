@@ -1,6 +1,6 @@
 package model;
 
-public class Loan extends DBObject
+public class Loan extends LoanDBObject
 {
     String bankName;
     String userName;

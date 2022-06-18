@@ -55,7 +55,7 @@ public class LoanService
                                                     command.getNoOfYears()
                                 )
                                 );
-        Pair<String, String> key = new Pair<String, String>(command.getBankName(), command.getUserName());
+        Pair<String, String> key = new Pair<>(command.getBankName(), command.getUserName());
         loanData.put(key, loan);
         return loan;
     }
