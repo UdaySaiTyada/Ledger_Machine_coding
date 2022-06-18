@@ -1,5 +1,7 @@
 package service;
 
+import enums.CommandType;
+import enums.RepaymentType;
 import kotlin.Pair;
 import model.Command;
 import model.Loan;
@@ -7,6 +9,7 @@ import model.Repayment;
 import utilities.EmiUtilities;
 import utilities.LoanUtilities;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +38,7 @@ public class LoanService
                 }
                 case BALANCE:
                 {
-                    displayBalance(command);
+//                    displayBalance(command);
                     break;
                 }
             }
@@ -64,6 +67,13 @@ public class LoanService
     {
         // Create a Loan Entity
         Loan loan = createLoanEntity(command);
+
+        // Create an empty record in repayments map
+        Pair<String, String> key = new Pair<String, String>(command.getBankName(), command.getUserName());
+        List<Repayment> repayments = new ArrayList<>();
+        Repayment repayment = new Repayment(0, RepaymentType.EMI, loan.getAmount(), 0);
+        repayments.add(repayment);
+        repaymentData.put(key, repayments);
     }
 
     public void processLumpSumPayment(Command command)
@@ -72,6 +82,34 @@ public class LoanService
         Map<Long, Long> repayment = lumpSumPayments.getOrDefault(key, new HashMap<>());
         repayment.put(command.getEmiNo(), command.getAmount());
         lumpSumPayments.put(key, repayment);
+    }
+
+    public void runPaymentSimulation()
+    {
+        for(Pair<String, String> key : loanData.keySet())
+        {
+            Loan loan = loanData.get(key);
+            for (long emiNo = 0; emiNo <= loan.getTotalNumberOfMonths();)
+            {
+                List<Repayment> repayments = repaymentData.get(key);
+                if(lumpSumPayments.get(key).containsKey(emiNo))
+                {
+
+                    Repayment repayment = repayments.get(repayments.size() - 1);
+                    long newRemainingAmount = repayment.getRemainingAmount() - lumpSumPayments.get(key).get(emiNo);
+                    Repayment newRepayment = new Repayment(lumpSumPayments.get(key).get(emiNo), RepaymentType.LUMP_SUM_PAYMENT, newRemainingAmount, emiNo);
+                    repayments.add(newRepayment);
+                    repaymentData.put(key, repayments);
+                }
+                emiNo++;
+                Repayment repayment = repayments.get(repayments.size() - 1);
+                long amountToPay = EmiUtilities.getRemainingEmi(repayment.getRemainingAmount(), loan.getEmiAmount());
+                long newRemainingAmount = repayment.getRemainingAmount() - amountToPay;
+                Repayment newRepayment = new Repayment(amountToPay, RepaymentType.EMI, newRemainingAmount, emiNo);
+                repayments.add(newRepayment);
+                repaymentData.put(key, repayments);
+            }
+        }
     }
 
     public void displayBalance(Command command)
@@ -83,5 +121,16 @@ public class LoanService
 
         System.out.print(command.getBankName() + " " + command.getUserName() + " " + totalAmountPaid + " " + noOfEmisRemaining + "\n");
 
+    }
+
+    public void display (String bankName, String userName)
+    {
+        Pair<String, String> key = new Pair<>(bankName, userName);
+        Loan loan = loanData.get(key);
+        List<Repayment> repayments = repaymentData.get(key);
+        for(Repayment repayment: repayments)
+        {
+            System.out.println(repayment.getRepaymentType() + " " + repayment.getAmount() + " " + (loan.getAmount() - repayment.getRemainingAmount())+ " " + repayment.getEmiNo());
+        }
     }
 }

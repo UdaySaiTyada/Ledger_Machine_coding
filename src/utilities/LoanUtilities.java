@@ -10,6 +10,6 @@ public class LoanUtilities
 
     public static long getInterest(long principalAmount, long rateOfInterest, long noOfYears)
     {
-        return principalAmount * rateOfInterest * noOfYears;
+        return (principalAmount * rateOfInterest * noOfYears) / 100;
     }
 }
