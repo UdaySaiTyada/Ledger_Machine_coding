@@ -11,7 +11,7 @@ public class EmiUtilities
 
     public static long getEmi(long amount, long noOfYears)
     {
-        return amount / getNoOfMonths(noOfYears);
+        return (long) Math.ceil(((double) amount) / getNoOfMonths(noOfYears));
     }
 
     public static long getNoOfMonths(long noOfYears)

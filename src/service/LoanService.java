@@ -60,6 +60,8 @@ public class LoanService
                                 );
         Pair<String, String> key = new Pair<>(command.getBankName(), command.getUserName());
         loanData.put(key, loan);
+
+        lumpSumPayments.put(key, new HashMap<>());
         return loan;
     }
 
@@ -101,6 +103,7 @@ public class LoanService
                     repayments.add(newRepayment);
                     repaymentData.put(key, repayments);
                 }
+                if(emiNo == loan.getTotalNumberOfMonths()) return;
                 emiNo++;
                 Repayment repayment = repayments.get(repayments.size() - 1);
                 long amountToPay = EmiUtilities.getRemainingEmi(repayment.getRemainingAmount(), loan.getEmiAmount());
