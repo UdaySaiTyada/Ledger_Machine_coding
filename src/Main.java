@@ -14,5 +14,7 @@ public class Main
         loanService.processCommands(commands);
         loanService.runPaymentSimulation();
         loanService.display("IDIDI", "Dale");
+        System.out.println("------------------------------------");
+        loanService.displayBalances(commands);
     }
 }
