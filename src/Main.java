@@ -11,7 +11,7 @@ public class Main
         LoanService loanService = new LoanService();
 
         List<Command> commands = fileReaderService.readTheInputFileAndGetTheCommands();
-        loanService.processCommands(commands);
+        loanService.processLoansAndPayments(commands);
         loanService.runPaymentSimulation();
         loanService.displayBalances(commands);
     }

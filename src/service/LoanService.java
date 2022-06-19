@@ -9,7 +9,6 @@ import model.Repayment;
 import utilities.EmiUtilities;
 import utilities.LoanUtilities;
 import utilities.MapUtilities;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,11 +16,12 @@ import java.util.Map;
 
 public class LoanService
 {
+    // Using Pair<String, String> as a key to fetch the data faster based on BankName and UserName
     Map<Pair<String, String>, List<Repayment>> repaymentData = new HashMap<>();
     Map<Pair<String, String>, Loan> loanData = new HashMap<>();
     Map<Pair<String, String>, Map<Long, Long>> lumpSumPayments = new HashMap<>();
 
-    public void processCommands(List<Command> commands)
+    public void processLoansAndPayments(List<Command> commands)
     {
         for(Command command: commands)
         {
@@ -37,11 +37,6 @@ public class LoanService
                     processLumpSumPayment(command);
                     break;
                 }
-                case BALANCE:
-                {
-//                    displayBalance(command);
-                    break;
-                }
             }
         }
     }
@@ -55,9 +50,7 @@ public class LoanService
                                 command.getRateOfInterest(),
                                 LoanUtilities.getInterest(command.getAmount(), command.getRateOfInterest(), command.getNoOfYears()),
                                 LoanUtilities.getAmount(command.getAmount(), command.getRateOfInterest(), command.getNoOfYears()),
-                                EmiUtilities.getEmi(LoanUtilities.getAmount(command.getAmount(), command.getRateOfInterest(), command.getNoOfYears()),
-                                                    command.getNoOfYears()
-                                )
+                                EmiUtilities.getEmiAmount(LoanUtilities.getAmount(command.getAmount(), command.getRateOfInterest(), command.getNoOfYears()), command.getNoOfYears())
                                 );
         Pair<String, String> key = MapUtilities.getKey(command.getBankName(), command.getUserName());
         loanData.put(key, loan);
@@ -150,15 +143,4 @@ public class LoanService
         System.out.print(command.getBankName() + " " + command.getUserName() + " " + totalAmountPaid + " " + noOfEmisRemaining + "\n");
 
     }
-
-//    public void display (String bankName, String userName)
-//    {
-//        Pair<String, String> key = new Pair<>(bankName, userName);
-//        Loan loan = loanData.get(key);
-//        List<Repayment> repayments = repaymentData.get(key);
-//        for(Repayment repayment: repayments)
-//        {
-//            System.out.println(repayment.getRepaymentType() + " " + repayment.getAmount() + " " + (loan.getAmount() - repayment.getRemainingAmount())+ " " + repayment.getEmiNo() + " " + repayment.getNoOfEmisRemaining());
-//        }
-//    }
 }
