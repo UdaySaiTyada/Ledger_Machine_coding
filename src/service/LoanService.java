@@ -60,7 +60,10 @@ public class LoanService
         return loan;
     }
 
-    public void processLoan(Command command) throws GenericException {
+    public void processLoan(Command command) throws GenericException
+    {
+        //checking for validity of input Data
+
         if(command.getAmount() <= 0)
             throw new GenericException(ExceptionConstants.PRINCIPAL_AMOUNT_CANNOT_BE_LESS_THAN_OR_EQUAL_TO_ZERO);
 
@@ -82,10 +85,18 @@ public class LoanService
         repaymentData.put(key, repayments);
     }
 
-    public void processLumpSumPayment(Command command)
+    public void processLumpSumPayment(Command command) throws GenericException
     {
+        //checking for validity of input Data
+        if(command.getAmount() < 0)
+            throw new GenericException(ExceptionConstants.PAYMENT_AMOUNT_CANNOT_BE_LESS_THAN_ZERO);
+
+        if(command.getEmiNo() <= 0)
+            throw new GenericException(ExceptionConstants.EMI_NO_CANNOT_BE_LESS_THAN_OR_EQUAL_TO_ZERO);
+
         Pair<String, String> key = MapUtilities.getKey(command.getBankName(), command.getUserName());
 
+        // Adding data
         Map<Long, Long> repayment = lumpSumPayments.getOrDefault(key, new HashMap<>());
         repayment.put(command.getEmiNo(), command.getAmount());
         lumpSumPayments.put(key, repayment);
