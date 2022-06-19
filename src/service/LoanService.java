@@ -61,11 +61,12 @@ public class LoanService
 
     public void processLoan(Command command)
     {
+        Pair<String, String> key = MapUtilities.getKey(command.getBankName(), command.getUserName());
+
         // Create a Loan Entity
         Loan loan = createLoanEntity(command);
 
         // Create an empty record in repayments map
-        Pair<String, String> key = MapUtilities.getKey(command.getBankName(), command.getUserName());
         List<Repayment> repayments = new ArrayList<>();
         Repayment repayment = new Repayment(0, RepaymentType.EMI, loan.getAmount(), 0, EmiUtilities.getNoOfEmisRemaining(loan.getAmount(), loan.getEmiAmount()));
         repayments.add(repayment);
@@ -75,23 +76,29 @@ public class LoanService
     public void processLumpSumPayment(Command command)
     {
         Pair<String, String> key = MapUtilities.getKey(command.getBankName(), command.getUserName());
+
         Map<Long, Long> repayment = lumpSumPayments.getOrDefault(key, new HashMap<>());
         repayment.put(command.getEmiNo(), command.getAmount());
         lumpSumPayments.put(key, repayment);
     }
 
+    // This function pays all the EMIs and lumpsum payments
     public void runPaymentSimulation()
     {
         for(Pair<String, String> key : loanData.keySet())
         {
+            // Processing Loans one by one
             Loan loan = loanData.get(key);
             for (long emiNo = 0; emiNo <= loan.getTotalNumberOfMonths();)
             {
                 List<Repayment> repayments = repaymentData.get(key);
+
+                // if there is a lumpsum payment for a certain month
                 if(lumpSumPayments.get(key).containsKey(emiNo))
                 {
-
                     Repayment repayment = repayments.get(repayments.size() - 1);
+
+                    // breaking the loop if the remaining amount = 0
                     if(repayment.getRemainingAmount() == 0) break;
                     long newRemainingAmount = repayment.getRemainingAmount() - lumpSumPayments.get(key).get(emiNo);
                     Repayment newRepayment = new Repayment(lumpSumPayments.get(key).get(emiNo), RepaymentType.LUMP_SUM_PAYMENT, newRemainingAmount, emiNo, EmiUtilities.getNoOfEmisRemaining(newRemainingAmount, loan.getEmiAmount()));
@@ -100,6 +107,8 @@ public class LoanService
                 }
                 if(emiNo == loan.getTotalNumberOfMonths()) break;
                 emiNo++;
+
+                // Paying an EMI
                 Repayment repayment = repayments.get(repayments.size() - 1);
                 if(repayment.getRemainingAmount() == 0) break;
                 long amountToPay = EmiUtilities.getRemainingEmi(repayment.getRemainingAmount(), loan.getEmiAmount());
@@ -138,9 +147,7 @@ public class LoanService
             if(repayment.getEmiNo() > command.getEmiNo())
                 break;
         }
-        // Write the logic here
 
         System.out.print(command.getBankName() + " " + command.getUserName() + " " + totalAmountPaid + " " + noOfEmisRemaining + "\n");
-
     }
 }

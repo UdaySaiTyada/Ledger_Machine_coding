@@ -62,7 +62,6 @@ public class FileReaderService
                         break;
                     }
                 }
-//                System.out.println(commandString);
             }
             sc.close();     //closes the scanner
         }
