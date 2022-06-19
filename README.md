@@ -1,5 +1,8 @@
 # The Ledger Co
 
+### The Java Version used for developing this is 1.8
+### The Project has an "input.txt" file, which is considered as the input for the Main Program, Please edit the "input.txt" file with your desired input.
+
 SAMPLE INPUT-OUTPUT 1
 
 INPUT:
