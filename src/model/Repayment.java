@@ -8,6 +8,15 @@ public class Repayment extends RepaymentDBObject
     RepaymentType repaymentType;
     long remainingAmount;
     long emiNo;
+    long noOfEmisRemaining;
+
+    public long getNoOfEmisRemaining() {
+        return noOfEmisRemaining;
+    }
+
+    public void setNoOfEmisRemaining(long noOfEmisRemaining) {
+        this.noOfEmisRemaining = noOfEmisRemaining;
+    }
 
     public long getEmiNo() {
         return emiNo;
@@ -41,10 +50,11 @@ public class Repayment extends RepaymentDBObject
         this.remainingAmount = remainingAmount;
     }
 
-    public Repayment(long amount, RepaymentType repaymentType, long remainingAmount, long emiNo) {
+    public Repayment(long amount, RepaymentType repaymentType, long remainingAmount, long emiNo, long noOfEmisRemaining) {
         this.amount = amount;
         this.repaymentType = repaymentType;
         this.remainingAmount = remainingAmount;
         this.emiNo = emiNo;
+        this.noOfEmisRemaining = noOfEmisRemaining;
     }
 }

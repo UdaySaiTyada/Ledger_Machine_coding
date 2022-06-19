@@ -74,7 +74,7 @@ public class LoanService
         // Create an empty record in repayments map
         Pair<String, String> key = MapUtilities.getKey(command.getBankName(), command.getUserName());
         List<Repayment> repayments = new ArrayList<>();
-        Repayment repayment = new Repayment(0, RepaymentType.EMI, loan.getAmount(), 0);
+        Repayment repayment = new Repayment(0, RepaymentType.EMI, loan.getAmount(), 0, EmiUtilities.getNoOfEmisRemaining(loan.getAmount(), loan.getEmiAmount()));
         repayments.add(repayment);
         repaymentData.put(key, repayments);
     }
@@ -101,7 +101,7 @@ public class LoanService
                     Repayment repayment = repayments.get(repayments.size() - 1);
                     if(repayment.getRemainingAmount() == 0) break;
                     long newRemainingAmount = repayment.getRemainingAmount() - lumpSumPayments.get(key).get(emiNo);
-                    Repayment newRepayment = new Repayment(lumpSumPayments.get(key).get(emiNo), RepaymentType.LUMP_SUM_PAYMENT, newRemainingAmount, emiNo);
+                    Repayment newRepayment = new Repayment(lumpSumPayments.get(key).get(emiNo), RepaymentType.LUMP_SUM_PAYMENT, newRemainingAmount, emiNo, EmiUtilities.getNoOfEmisRemaining(newRemainingAmount, loan.getEmiAmount()));
                     repayments.add(newRepayment);
                     repaymentData.put(key, repayments);
                 }
@@ -111,7 +111,7 @@ public class LoanService
                 if(repayment.getRemainingAmount() == 0) break;
                 long amountToPay = EmiUtilities.getRemainingEmi(repayment.getRemainingAmount(), loan.getEmiAmount());
                 long newRemainingAmount = repayment.getRemainingAmount() - amountToPay;
-                Repayment newRepayment = new Repayment(amountToPay, RepaymentType.EMI, newRemainingAmount, emiNo);
+                Repayment newRepayment = new Repayment(amountToPay, RepaymentType.EMI, newRemainingAmount, emiNo, EmiUtilities.getNoOfEmisRemaining(newRemainingAmount, loan.getEmiAmount()));
                 repayments.add(newRepayment);
                 repaymentData.put(key, repayments);
             }
@@ -131,20 +131,19 @@ public class LoanService
     {
         long totalAmountPaid = 0;
         long noOfEmisRemaining = 0;
-        long lumpSumPayments = 0;
-
 
         Pair<String, String> key = MapUtilities.getKey(command.getBankName(), command.getUserName());
         List<Repayment> repayments = repaymentData.get(key);
         Loan loan = loanData.get(key);
         for (Repayment repayment: repayments)
         {
-            if(repayment.getRepaymentType() == RepaymentType.LUMP_SUM_PAYMENT)
-                lumpSumPayments++;
             if(repayment.getEmiNo() == command.getEmiNo())
+            {
                 totalAmountPaid = loan.getAmount() - repayment.getRemainingAmount();
-            if(repayment.getEmiNo() > command.getEmiNo() && repayment.getRepaymentType() == RepaymentType.EMI)
-                noOfEmisRemaining ++;
+                noOfEmisRemaining = repayment.getNoOfEmisRemaining();
+            }
+            if(repayment.getEmiNo() > command.getEmiNo())
+                break;
         }
         // Write the logic here
 
@@ -152,14 +151,14 @@ public class LoanService
 
     }
 
-    public void display (String bankName, String userName)
-    {
-        Pair<String, String> key = new Pair<>(bankName, userName);
-        Loan loan = loanData.get(key);
-        List<Repayment> repayments = repaymentData.get(key);
-        for(Repayment repayment: repayments)
-        {
-            System.out.println(repayment.getRepaymentType() + " " + repayment.getAmount() + " " + (loan.getAmount() - repayment.getRemainingAmount())+ " " + repayment.getEmiNo());
-        }
-    }
+//    public void display (String bankName, String userName)
+//    {
+//        Pair<String, String> key = new Pair<>(bankName, userName);
+//        Loan loan = loanData.get(key);
+//        List<Repayment> repayments = repaymentData.get(key);
+//        for(Repayment repayment: repayments)
+//        {
+//            System.out.println(repayment.getRepaymentType() + " " + repayment.getAmount() + " " + (loan.getAmount() - repayment.getRemainingAmount())+ " " + repayment.getEmiNo() + " " + repayment.getNoOfEmisRemaining());
+//        }
+//    }
 }

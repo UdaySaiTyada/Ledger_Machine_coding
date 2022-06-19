@@ -18,4 +18,9 @@ public class EmiUtilities
     {
         return (TimeConstants.NO_OF_MONTHS_IN_YEAR * noOfYears);
     }
+
+    public static long getNoOfEmisRemaining(long remainingAmount, long emi)
+    {
+        return (long) Math.ceil(((double) remainingAmount) /emi);
+    }
 }
