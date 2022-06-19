@@ -3,6 +3,7 @@ package service;
 import constants.FileConstants;
 import constants.RegexConstants;
 import enums.CommandType;
+import exception.UnknownCommandException;
 import model.Command;
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -24,7 +25,17 @@ public class FileReaderService
             while(sc.hasNextLine())
             {
                 String commandString = sc.nextLine();
-                CommandType commandType = CommandType.valueOf(commandString.split(RegexConstants.SPACE)[0]);
+                CommandType commandType = null;
+                try
+                {
+                    commandType = CommandType.valueOf(commandString.split(RegexConstants.SPACE)[0]);
+                }
+                catch (Exception exception)
+                {
+                    System.out.println("\"" + commandString.split(RegexConstants.SPACE)[0] + "\" is an unknown command");
+                    throw new UnknownCommandException();
+                }
+
                 Command command;
                 switch(commandType)
                 {

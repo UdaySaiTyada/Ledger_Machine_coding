@@ -1,3 +1,4 @@
+import exception.GenericException;
 import model.Command;
 import service.FileReaderService;
 import service.LoanService;
@@ -5,8 +6,7 @@ import java.util.List;
 
 public class Main
 {
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) throws GenericException {
         FileReaderService fileReaderService = new FileReaderService();
         LoanService loanService = new LoanService();
 

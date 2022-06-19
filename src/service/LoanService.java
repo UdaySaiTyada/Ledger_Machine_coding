@@ -1,7 +1,9 @@
 package service;
 
+import constants.ExceptionConstants;
 import enums.CommandType;
 import enums.RepaymentType;
+import exception.GenericException;
 import kotlin.Pair;
 import model.Command;
 import model.Loan;
@@ -21,8 +23,7 @@ public class LoanService
     Map<Pair<String, String>, Loan> loanData = new HashMap<>();
     Map<Pair<String, String>, Map<Long, Long>> lumpSumPayments = new HashMap<>();
 
-    public void processLoansAndPayments(List<Command> commands)
-    {
+    public void processLoansAndPayments(List<Command> commands) throws GenericException {
         for(Command command: commands)
         {
             switch(command.getCommandType())
@@ -59,8 +60,16 @@ public class LoanService
         return loan;
     }
 
-    public void processLoan(Command command)
-    {
+    public void processLoan(Command command) throws GenericException {
+        if(command.getAmount() <= 0)
+            throw new GenericException(ExceptionConstants.PRINCIPAL_AMOUNT_CANNOT_BE_LESS_THAN_OR_EQUAL_TO_ZERO);
+
+        if(command.getNoOfYears() <= 0)
+            throw new GenericException(ExceptionConstants.NO_OF_YEARS_CANNOT_BE_LESS_THAN_OR_EQUAL_TO_ZERO);
+
+        if(command.getRateOfInterest() < 0)
+            throw new GenericException(ExceptionConstants.RATE_OF_INTEREST_CANNOT_BE_LESS_THAN_ZERO);
+
         Pair<String, String> key = MapUtilities.getKey(command.getBankName(), command.getUserName());
 
         // Create a Loan Entity
