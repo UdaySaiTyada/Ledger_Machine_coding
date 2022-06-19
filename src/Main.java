@@ -13,7 +13,6 @@ public class Main
         List<Command> commands = fileReaderService.readTheInputFileAndGetTheCommands();
         loanService.processCommands(commands);
         loanService.runPaymentSimulation();
-//        loanService.display("UON", "Shelly");
         loanService.displayBalances(commands);
     }
 }
