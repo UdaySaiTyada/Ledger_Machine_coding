@@ -140,8 +140,7 @@ public class LoanService
         }
     }
 
-    public void displayBalances(List<Command> commands)
-    {
+    public void displayBalances(List<Command> commands) throws GenericException {
         for(Command command : commands)
         {
             if(command.getCommandType() == CommandType.BALANCE)
@@ -149,8 +148,12 @@ public class LoanService
         }
     }
 
-    public void displayBalance(Command command)
+    public void displayBalance(Command command) throws GenericException
     {
+        // Checking the Validity of Input
+        if(command.getEmiNo() <= 0)
+            throw new GenericException(ExceptionConstants.EMI_NO_CANNOT_BE_LESS_THAN_OR_EQUAL_TO_ZERO);
+
         long totalAmountPaid = 0;
         long noOfEmisRemaining = 0;
 
